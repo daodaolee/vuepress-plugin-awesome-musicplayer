@@ -88,7 +88,7 @@ export default {
   },
   data(){
     return{
-      href: location.href,
+      href: '',
       albumImg: '',
       musicSrc: '',
       nolyric: false,
@@ -115,6 +115,7 @@ export default {
     }
   },
   mounted(){
+    this.href = window.location.href;
     this.getSone()
   },
   watch:{
