@@ -1,0 +1,36 @@
+{
+  "name": "vuepress-plugin-awesome-musicplayer",
+  "version": "1.0.0",
+  "description": "a music player by vuepress",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vuepress dev docs --temp .temp",
+    "build": "vuepress build docs"
+  },
+  "keywords": [
+    "vuepress",
+    "music",
+    "player"
+  ],
+  "author": "daodaolee",
+  "license": "MIT",
+  "devDependencies": {
+    "gh-pages": "^2.0.1",
+    "release-it": "^10.3.1",
+    "vuepress": "^1.8.2"
+  },
+  "dependencies": {
+    "@better-scroll/core": "^2.0.0-alpha.20",
+    "@better-scroll/mouse-wheel": "^2.0.0-alpha.20",
+    "@better-scroll/scroll-bar": "^2.0.0-alpha.20",
+    "better-scroll": "^1.15.2",
+    "good-storage": "^1.1.0",
+    "lodash-es": "^4.17.15",
+    "node-sass": "^4.11.0",
+    "resize-observer-polyfill": "^1.5.1",
+    "sass-loader": "^7.1.0",
+    "vuex": "^3.0.1",
+    "axios": "^0.21.1"
+  }
+}
