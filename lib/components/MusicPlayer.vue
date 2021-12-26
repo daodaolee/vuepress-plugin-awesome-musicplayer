@@ -1,7 +1,7 @@
 <template>
   <div class="music_player">
     <div class="loading" v-if="isLoading">
-      <img style="width:50px" src="../assets/img/loading.gif" alt="">
+      <Loading />
     </div>
     <div class="left">
       <img class="point" src="../assets/img/point.png" alt="">
@@ -83,6 +83,7 @@
 
 <script>
 import Scroller from "./Scroller.vue";
+import Loading from "./Loading.vue";
 import { formatTime } from '../utils';
 import lyricParser from "../utils/lrcparse"
 import {getSongDetail} from '../api'
@@ -95,7 +96,8 @@ const AUTO_SCROLL_RECOVER_TIME = 1000
 
 export default {
   components: {
-    Scroller
+    Scroller,
+    Loading
   },
   data(){
     return{
