@@ -24,11 +24,14 @@ npm install vuepress-plugin-awesome-musicplayer -D
 1. 打开网易云客户端，播放一首音乐
 2. 点击分享按钮，选择复制链接
 3. 链接格式如：`https://music.163.com/song?id=xxx&userid=`，`xxx` 就是该歌曲的id
+4. 由于接口原因，可能有的音乐无法读取，多次刷新可能造成请求失败
 
+### 获取音源
+为了更好的用户体验，增加了音频解析可视化面板，由于三方接口配合 `MediaElementAudioSourceNode` 会导致 `CORS` 和 `CORB` 播放报错，所以需要手动添加音源文件链接，建议使用类似图床链接引入即可。
 ### 引入
 在想要插入播放器的Markdown页面，加入以下代码即可：
 ```
-<MusicPlayer musicId="xxx" style="margin:0 auto">
+<MusicPlayer musicId="xxx" musicSrc="xxx.mp3" style="margin:0 auto">
 ```
 ## 效果图
 亮系和暗系是适配 [vuepress-reco](https://vuepress-theme-reco.recoluan.com/views/1.x/) 的主题切换做的适配。
