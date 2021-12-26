@@ -35,5 +35,10 @@ npm install vuepress-plugin-awesome-musicplayer -D
 ```
 ## 效果图
 亮系和暗系是适配 [vuepress-reco](https://vuepress-theme-reco.recoluan.com/views/1.x/) 的主题切换做的适配。
-![白色](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211223183444.png)
-![黑色](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211223183445.png)
+
+![](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211226160304.png)
+![](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211226160305.png)
+![](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211226160306.png)
+![](https://cdn.jsdelivr.net/gh/daodaolee/photobed@main/img/20211226160307.png)
+
+
