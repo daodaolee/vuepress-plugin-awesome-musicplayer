@@ -1,6 +1,6 @@
 {
   "name": "vuepress-plugin-awesome-musicplayer",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "a music player by vuepress",
   "main": "index.js",
   "scripts": {

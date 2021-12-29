@@ -30,9 +30,22 @@ npm install vuepress-plugin-awesome-musicplayer -D
 为了更好的用户体验，增加了音频解析可视化面板，由于三方接口配合 `MediaElementAudioSourceNode` 会导致 `CORS` 和 `CORB` 播放报错，所以需要手动添加音源文件链接，建议使用类似图床链接引入即可。
 ### 引入
 在想要插入播放器的Markdown页面，加入以下代码即可：
-```
+``` html
 <MusicPlayer musicId="xxx" musicSrc="xxx.mp3" style="margin:0 auto">
 ```
+### 主题
+如果想改变主题，添加 `theme` 参数即可，默认是 `apple` 主题：
+```html
+<MusicPlayer theme="apple">
+```
+默认提供了：`apple`、`aurora`、`borealis`、`candy`、`cool`、`dusk`、`outrun`、`summer`、`tiedye` 和 `rainbow` 10种渐变色。
+
+
+也可以自定义颜色，传入一个渐变色类型参数即可，格式如下：
+```html
+<MusicPlayer :theme="[{pos: 0, color: '#000'},{pos: 0.4, color: '#aaa'}, {pos: 1, color: '#fff'}]">
+```
+其中 `pos` 代表初始颜色位置的百分比（从0到1），`color` 代表颜色。
 ## 效果图
 亮系和暗系是适配 [vuepress-reco](https://vuepress-theme-reco.recoluan.com/views/1.x/) 的主题切换做的适配。
 

@@ -84,7 +84,7 @@
 <script>
 import Scroller from "./Scroller.vue";
 import Loading from "./Loading.vue";
-import { formatTime } from '../utils';
+import { formatTime, audioTheme } from '../utils';
 import lyricParser from "../utils/lrcparse"
 import {getSongDetail} from '../api'
 import { mapState, mapMutations, mapActions } from "../store/helper/music"
@@ -113,7 +113,13 @@ export default {
       songReady: false,
       progress: '0%',
       totalTime: '',
-      panelIsLyric: true
+      panelIsLyric: true,
+
+      httpEnd: true,
+
+      sourceAudio: null,
+      contextAudio: null,
+      analyserAudio: null
     }
   },
   props:{
@@ -124,7 +130,11 @@ export default {
     musicSrc: {
       type: String,
       default: ''
-    }
+    },
+    theme: {
+      type: [String, Array],
+      default: "apple"
+    },
   },
   created(){
     this.lyricScrolling = {
@@ -150,7 +160,7 @@ export default {
         this.scrollToActiveLyric()
       }
     },
-    currentSong(newSong, oldSong) {
+    currentSong(newSong) {
       // 清空了歌曲
       if (!newSong.id) {
         this.audio.pause()
@@ -169,6 +179,20 @@ export default {
       this.$nextTick(() => {
         newPlaying ? this.play() : this.pause()
       })
+    },
+    songReady(n){
+      if(n && this.httpEnd){
+        this.isLoading = false
+      }else{
+        this.isLoading = true
+      }
+    },
+    httpEnd(n){
+      if(n && this.songReady){
+        this.isLoading = false
+      }else{
+        this.isLoading = true
+      }
     }
   },
   computed:{
@@ -229,8 +253,7 @@ export default {
         this.progress = Math.ceil(this.currentTime / this.audio.duration * 100) + '%'
         try {
           await this.audio.play()
-            this.onLoadAudio()
-        
+          this.onLoadAudio()
         } catch (error) {
           this.setPlayingState(false)
         }
@@ -244,14 +267,15 @@ export default {
       this.setPlayingState(!this.playing)
     },
     async getSone(){
-      this.isLoading = true;
+      this.httpEnd = false;
       const result = await getSongDetail(this.musicId)
-      this.isLoading = false;
+      this.httpEnd = true;
+
       const {cover, lyric, link, id, album, artist, title} = result;
       this.title = title;
       this.signer = artist;
       this.albumName = album
-      // this.musicSrc = link;
+
       this.albumImg = cover && cover.replace("250y250","400y400") || "";
       this.lyric = lyricParser(lyric).lyric
     },
@@ -287,58 +311,70 @@ export default {
       }
     },
     onLoadAudio() {
-      //  创建AudioContext，关联音频输入，进行解码、控制音频播放和暂停
-      const context = new (window.AudioContext || window.webkitAudioContext)();
+      // debugger
+      if(!this.contextAudio){
+        // 创建AudioContext，关联音频输入，进行解码、控制音频播放和暂停
+        this.contextAudio = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(!this.analyserAudio){
+        // 创建analyser，获取音频的频率数据（FrequencyData）和时域数据（TimeDomainData）
+        this.analyserAudio = this.contextAudio.createAnalyser();
+        // fftSize：快速傅里叶变换，信号样本的窗口大小，区间为32-32768，默认2048
+        this.analyserAudio.fftSize = 512;
+      }
 
-      // 创建analyser，获取音频的频率数据（FrequencyData）和时域数据（TimeDomainData）
-      const analyser = context.createAnalyser();
-
-      // fftSize：快速傅里叶变换，信号样本的窗口大小，区间为32-32768，默认2048
-      analyser.fftSize = 256;
-
-      // 创建音频源
-      const source = context.createMediaElementSource(this.audio);
-
-      // 音频源关联到分析器
-      source.connect(analyser);
-
-      // 分析器关联到输出设备（耳机、扬声器等）
-      analyser.connect(context.destination);
+      if(!this.sourceAudio){
+        // 创建音频源
+        this.sourceAudio = this.contextAudio.createMediaElementSource(this.audio);
+        // 音频源关联到分析器
+        this.sourceAudio.connect(this.analyserAudio);
+        // 分析器关联到输出设备（耳机、扬声器等）
+        this.analyserAudio.connect(this.contextAudio.destination);
+      }
 
       // 获取频率数组
-      var bufferLength = analyser.frequencyBinCount;
-    
-      var dataArray = new Uint8Array(bufferLength);
+      const bufferLength = this.analyserAudio.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      const canvas = document.getElementById("canvas");
+      canvas.width = 435;
+      canvas.height = 250;
+      const ctx = canvas.getContext("2d");
+      const WIDTH = canvas.width;
+      const HEIGHT = canvas.height;
 
-      var canvas = document.getElementById("canvas");
-      canvas.width = 1200;
-      canvas.height = 450;
-      var ctx = canvas.getContext("2d");
-      var WIDTH = canvas.width;
-      var HEIGHT = canvas.height;
-
-      var barWidth = WIDTH / bufferLength;
-      var barHeight;
+      const barWidth = WIDTH / bufferLength;
+      let barHeight;
+      // 主题色
+      let canvasTheme;
+      if(typeof this.theme === "string"){
+        canvasTheme = audioTheme[this.theme]
+      }else{
+        canvasTheme = this.theme;
+      }
 
       const renderFrame = () => {
         requestAnimationFrame(renderFrame);
-        
+
         // 将当前频率数据复制到传入的Uint8Array，更新频率数据
-        analyser.getByteFrequencyData(dataArray);
+        this.analyserAudio.getByteFrequencyData(dataArray);
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
         // bufferLength表示柱形图中矩形的个数，当前是128个
-        for (var i = 0, x = 0; i < bufferLength; i++) {
+        for (let i = 0, x = 0; i < bufferLength; i++) {
           barHeight = dataArray[i];
-          var r = barHeight + 25 * (i / bufferLength);
-          var g = 250 * (i / bufferLength);
-          var b = 50;
-          // var r = 158, g = 158, b = 158;
-          ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ",0.65)";
-          ctx.fillRect(x, (HEIGHT - barHeight), barWidth, barHeight);
+          const gradient = ctx.createLinearGradient(0,0,0,250)
+          this.colorPick(gradient, canvasTheme)
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x,  250 - barHeight, barWidth, barHeight);
           x += barWidth + 2;
         }
       }
       renderFrame();
+    },
+    colorPick(gradient, arr){
+      arr.forEach(item => {
+        const {pos, color} = item;
+        gradient.addColorStop(pos, color)
+      })
     }
   }
 }
@@ -483,9 +519,11 @@ export default {
     canvas {
       position: absolute;
       left: 0;
-      bottom: 100px;
-      width: 100%;
-      height: 100%;
+      bottom: 140px;
+      // width: 350px;
+      height: 200px;
+      // width: 100%;
+      // height: 100%;
       z-index: 99999;
     }
     .noLyric{
