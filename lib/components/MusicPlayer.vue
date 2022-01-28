@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="right">
-     
+
       <canvas id="canvas" :style="{transition: 'all .2s ease-in-out',opacity: !panelIsLyric ? 1 : 0}"></canvas>
       <div class="lyric-container" :style="{transition: 'all .2s ease-in-out',opacity: panelIsLyric ? 1 : 0}">
         <div class="music-name">
@@ -150,6 +150,13 @@ export default {
   mounted(){
     this.href = window.location.href;
     this.getSone()
+    // 解决ios设备上无法播放问题
+    const userAgent = navigator.userAgent;
+    const isIOS = !!userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    if (isIOS) {
+      const musicDom = document.getElementById('audio');
+      musicDom.load();
+    }
   },
   watch:{
     activeLyricIndex(newIndex, oldIndex) {
@@ -253,7 +260,8 @@ export default {
       if (this.songReady) {
         this.progress = Math.ceil(this.currentTime / this.audio.duration * 100) + '%'
         try {
-          await this.audio.play()
+          // await
+          this.audio.play()
           this.onLoadAudio()
         } catch (error) {
           this.setPlayingState(false)
@@ -536,7 +544,7 @@ export default {
       p:first-child{
         // color:#333;
         font-size: 22px;
-        // font-weight: 
+        // font-weight:
         margin-bottom: 5px;;
       }
     }
@@ -554,7 +562,7 @@ export default {
             font-size: 16px;
             font-weight: bold
           }
-        }           
+        }
       }
     }
   }
