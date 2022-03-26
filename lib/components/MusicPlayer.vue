@@ -158,6 +158,10 @@ export default {
       musicDom.load();
     }
   },
+  beforeUnmount() {
+    this.setPlayingState(0)
+    this.setPlayingState(false)
+  },
   watch:{
     activeLyricIndex(newIndex, oldIndex) {
       if (
