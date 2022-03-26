@@ -34,7 +34,7 @@ npm install vuepress-plugin-awesome-musicplayer -D
 ### 引入
 在想要插入播放器的Markdown页面，加入以下代码即可：
 ``` html
-<MusicPlayer musicId="xxx" musicSrc="xxx.mp3" style="margin:0 auto">
+<MusicPlayer musicId="xxx" musicSrc="xxx.mp3" style="margin:0 auto" />
 ```
 ### 主题
 如果想改变主题，添加 `theme` 参数即可，默认是 `apple` 主题：
